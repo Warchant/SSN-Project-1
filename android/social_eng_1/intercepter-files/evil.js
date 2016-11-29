@@ -1,0 +1,1 @@
+alert("Install security update to continue");
