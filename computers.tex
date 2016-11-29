@@ -10,17 +10,19 @@ In each subsection we are going to describe possible computer settings, which co
 Having physical access to the target computer the simpliest attack would be the ejecting the hard disk and mounting it to attacker's computer. Then, attacker can perform steps \ref{root-start}-\ref{root-end} described below (section \ref{a1}) to get root access.
 
 \subsubsection*{Mitigation}
-Since this is an offline attack, only offline techniques are applicable. You can keep your disk either in very secure place or use full disk encryption.
+Since this is an offline attack, only offline techniques are applicable. You can keep your disk either in very secure place or use full disk encryption. As a preventive measure may be the sealed cover of the computer.
 
 \subsubsection*{Vulnerable}
+This type of attack is especially dangerous for desktop PC's running any operating system, which have no \textbf{full} disk encryption. Having partial disk encryption (i.e. encryption of home folder) can protect your personal files, but attacker can setup a backdoor or a script, which will be executed on your next login, thus, compromizing your data.
 
 
 \subsection{Attack 1 - Booting into another OS}\label{a1}
 
 \subsubsection*{Attacking}
 \begin{enumerate}
-    \item Insert USB stick or optical disk with any live linux OS (in our example we use Kali Linux)
-    \item Reboot computer and boot into live OS \footnote{If it is server, then it is booted into OS. Rebooting can be a signal to administrators that something is wrong, so this method is not "stealth". If it is a personal computer, nobody would even notice that somebody stole something from the computer.}
+    \item[1a] Insert USB stick or optical disk with any live linux OS (in our example we use Kali Linux).Reboot computer and boot into live OS \footnote{If it is server, then it is booted into OS. Rebooting can be a signal to administrators that something is wrong, so this method is not stealth. If it is a personal computer, nobody would even notice that somebody stole something from the computer.}
+    
+    \item[1b] Another option is to     
     
     \item Get list of partitions \label{root-start}
 \begin{minted}[breaklines=true]{bash}
@@ -50,6 +52,7 @@ root@kali:/mnt# mount -t ext4 /dev/sda1 disk/
 root@kali:/mnt# chroot disk/
 \end{minted}
 \end{enumerate}
+
 Done! Attacker has root access and able read any file on a mounted filesystem. At this point he can steal secret file or create a local or remote backdoor into main operating system. 
 
 
