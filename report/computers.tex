@@ -1,0 +1,90 @@
+\section{Attacking computers}
+In this section we consider attacks on computers: personal and servers. We consider an attacker with limited resources, but knowledgeable enough to perform actual attacks. 
+
+In each subsection we are going to describe possible computer settings, which could be attacked via physical access. In each case operating system has secret file in user home directory, which represents sensitive data, which attacker wants to obtain. In real-world scenario it can be anything: RSA private key, document or \texttt{shadow} file with hashed passwords.
+
+
+\subsection{Attack 0 - Eject hard disk from the computer and mount it to attacker's computer} \label{a0}
+
+\subsubsection*{Attacking}
+Having physical access to the target computer the simpliest attack would be the ejecting the hard disk and mounting it to attacker's computer. Then, attacker can perform steps \ref{root-start}-\ref{root-end} described below (section \ref{a1}) to get root access.
+
+\subsubsection*{Mitigation}
+Since this is an offline attack, only offline techniques are applicable. You can keep your disk either in very secure place or use full disk encryption.
+
+\subsubsection*{Vulnerable}
+
+
+\subsection{Attack 1 - Booting into another OS}\label{a1}
+
+\subsubsection*{Attacking}
+\begin{enumerate}
+    \item Insert USB stick or optical disk with any live linux OS (in our example we use Kali Linux)
+    \item Reboot computer and boot into live OS \footnote{If it is server, then it is booted into OS. Rebooting can be a signal to administrators that something is wrong, so this method is not "stealth". If it is a personal computer, nobody would even notice that somebody stole something from the computer.}
+    
+    \item Get list of partitions \label{root-start}
+\begin{minted}[breaklines=true]{bash}
+root@kali:/mnt# fdisk -l
+Disk /dev/sda: 16 GiB, 17150550016 bytes, 33497168 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x00046ad5
+
+Device        Start     End    Sectors   Size Type
+/dev/sda1      2048 31926271  31924224  15.2G Linux
+/dev/sda2  31928318 33495039   1566722   765M Extended
+/dev/sda3  31928318 33495039   1566720   765M Linux swap / Solaris
+\end{minted}
+
+    \item Mount desired partition (in our case it is \texttt{/dev/sda1})
+    \begin{minted}[breaklines=true]{bash}
+root@kali:/mnt# mkdir disk
+root@kali:/mnt# mount -t ext4 /dev/sda1 disk/
+\end{minted}
+
+    \item \texttt{chroot} into mounted disk. This step allows an attacker to use commands like \texttt{passwd root} as if he had a root access in Ubuntu OS. \label{root-end}
+    
+\begin{minted}[breaklines=true]{bash}
+root@kali:/mnt# chroot disk/
+\end{minted}
+\end{enumerate}
+Done! Attacker has root access and able read any file on a mounted filesystem. At this point he can steal secret file or create a local or remote backdoor into main operating system. 
+
+
+\subsubsection*{Mitigation}
+The best defensive method to prevent attack described in section \ref{a1} is to restrict booting from USB drives or restrict access to data on a hard disk:
+\begin{itemize}
+    \item \textit{Physically remove all USB ports from the computer, as well as optical drives}. This are extreme measures, but in some cases may be useful. Unfortunately, other attacks are possible.
+    
+    \item \textit{Seal up all USB ports and computer cover}. Sealing up does not restrict the attacker to steal the data, but will not allow to do so without detection. 
+    
+    \item \textit{Restrict booting to USB in BIOS}. This is not secure method, because what prevents an attacker to change settings back? May be password in BIOS? Well prepared attacker is able to reset BIOS settings, including a password, by simply removing computer power cable and a battery from the motherboard for a few seconds.
+    
+    \item \textit{Enable UEFI Secure boot}, if your OS was installed in UEFI mode. This option allows to restrict booting into unsigned operating systems. But there is a problem: to use this attack we can boot from USB into any linux system, including signed. So, this method is not practical.
+    
+    \item \textit{Enable partial or full disk encryption}. Partial disk encryption works by encryption some part of hard drive, for example, user's home directory. 
+\end{itemize}
+
+Encrypting only user's home folder restricts an attacker to access secret file, it is fast enough to ignore delays during boot and doesn't require a password during boot, which is useful characteristics for server systems. 
+
+
+\subsubsection*{Vulnerable}
+
+
+
+
+%\subsection{Physical access to computer running \textit{Ubuntu 14.04 server} without full disk encryption or encryption of home directory}
+%Ubuntu 14.04 is considered to be the most popular debian-based server operating system. Having full disk encryption enabled on servers may cause different problems like slowing down booting speed because of waiting for disk decryption or the need to enter decrypt password during boot, which is not practical for servers. So, it has very likely to be without FDE\footnote{Full Disk Encryption}. 
+
+%To perform this attack we installed Ubuntu 14.04 server edition on VirtualBox virtual disk, emulating the server system. 
+
+%If it is a server, then it is enabled and booted into operating system. The only possible vector is to attack an operating system or screensaver (password prompt program), which is not the case, because most probably it was very well secured by developers and developing the exploit will take huge amount of resources. 
+
+%Our primary target is secret file inside the user's home directory and everything we need is to get it. To accomplish this, all we need to do is to get access to the hard disk. 
+
+%\subsubsection{Attack 1 - Booting into another OS}\label{a1}
+%\paragraph{Preventing attack 1:}
+%\subsubsection{Attack 2 - Using bootloader to boot into shell before OS}\label{a2}
+%What if target server has no USB ports or optical drives? Is server safe? No!
