@@ -1,3 +1,0 @@
-adb pull /data/system/gesture.key Documents/inno/SSN/proj/screen_lock
-~ # mv /data/system/gesture.key /data/system/gesture.key.orig
-~ # mv /data/system/gesture.key.orig /data/system/gesture.key

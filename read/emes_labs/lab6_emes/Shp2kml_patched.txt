@@ -1,1 +1,0 @@
-sometimes the program freeze, try to remove the created shp2kml.ini file and restart.
