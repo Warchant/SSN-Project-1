@@ -1,0 +1,16 @@
+*.fls
+*.swp
+*.aux
+*.bbl
+*.pyg
+*-blx.bib
+*.run.xml
+*.synctex.gz 
+_minted*
+*.log
+*.out
+*.pdf
+*.toc
+*.blg
+*.fdb_latexmk
+*.lof
