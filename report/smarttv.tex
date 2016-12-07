@@ -1,0 +1,67 @@
+\subsection{Findings}
+
+Samsung Smart TV runs on a custom Linux distribution. It allows to install applications from market and execute them. We tried to find out what can be possibly done via local network access. We focused on that because some people reported that newer versions do not allow to install arbitrary applications not from market.
+
+There are 2 interesting points:
+
+\begin{itemize}
+\item{}
+Information disclosure via local network access (using UPnP).
+\item{}
+Unencrypted traffic.
+\begin{itemize}
+\item{}
+New apps are downloaded in clear text, therefore an attacker can spoof them.
+\item{}
+Over-the-air updates are sent in clear text.
+\end{itemize}
+\end{itemize}
+
+\subsubsection{Information disclosure}
+
+Attacker with a local network access can send and receive UPnP messages from Smart TV. [smart-tv] These messages can reveal complete information about the device. An example of such message from Smart TV in our campus is provided below.
+
+\begin{lstlisting}
+{
+  "DUID": "05f5e101-0064-1000-bc6f-bc148582a3d6",
+  "Model": "14_X14",
+  "ModelName": "UE32H6300",
+  "ModelDescription": "Samsung TV RCR",
+  "NetworkType": "wireless",
+  "SSID": "4-213",
+  "IP": "192.168.1.36",
+  "FirmwareVersion": "Unknown",
+  "DeviceName": "[TV]Samsung LED32",
+  "DeviceID": "05f5e101-0064-1000-bc6f-bc148582a3d6",
+  "UDN": "05f5e101-0064-1000-bc6f-bc148582a3d6",
+  "Resolution": "1920x1080",
+  "CountryCode": "RU",
+  "SmartHubAgreement": "true",
+  "ServiceURI": "http://192.168.1.36:8001/ms/1.0/",
+  "DialURI": "http://192.168.1.36:8001/ws/apps/",
+  "Capabilities": [
+    {
+      "name": "samsung:multiscreen:1",
+      "port": "8001",
+      "location": "/ms/1.0/"
+    }
+  ]
+}
+\end{lstlisting}
+
+Moreover, during the experiments we were able to remotely send commands and, for example, turn off the TV. We have found that the TV does not authenticate the client that sends commands. If the remote control was enabled for an authentic device, an attacker can use it as well.
+
+\subsubsection{Unencrypted traffic}
+
+The user can install applications on Smart TV from the market. The problem is that the whole transmission process is unencrypted. It allows the attacker to spoof the transmitted application, so the user will install a malicious one. A typical Samsung Smart TV application is represented as .img file in network traffic. This file may be considered as a Squash Filesystem file, which includes all application resources and binaries. Anyone with Smart TV software development kit can create a malicious application. An example of a GET request for downloading application is the following:
+
+\begin{lstlisting}
+GET /files/widget/201602/3201410000101/1.701/widget/enc_3201410000101_1.701.img
+\end{lstlisting}
+
+Over-the-air updates are also sent in plain HTTP. It is hard to guess whether the updates are encrypted via some other methods or not. In case if no encryption is used, it is possible to install an arbitrary update. In case if updates are signed and the attacker has private keys, it is possible to spoof the update. An example of a GET request for updates is the following:
+
+\begin{lstlisting}
+GET /firmware/tv/267/SWU-OU_T-MST14DEUC-2860-160915/OUITHeaders.dat HTTP/1.1
+\end{lstlisting}
+
