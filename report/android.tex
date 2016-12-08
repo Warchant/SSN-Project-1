@@ -9,6 +9,7 @@ When it comes to data acquisition from an Android smartphone, there are several 
 Although the screen of an Android device may be locked and the disk may be encrypted, there still may be Android Debug Bridge (ADB) enabled, which could provide an entry point for data acquisition.
 
 \subsection{Encryption}
+\label{section:encryption}
 
 Android Full Disk Encryption uses linux kernel module dm-crypt, AES-CBC with ESSIV:SHA256, a 16-byte Disk Encryption Key (DEK) and a 16-byte Initial Vector (IV). Memory partitions are encrypted transparently for userspace applications. The encryption information is stored in a special structure called crypto-footer. This structure is 16 KiB long, but most of this space is reserved for future use, and it may reside at the end of the encrypted partition or on a separate dedicated partition. 
 
@@ -236,7 +237,7 @@ Figure \ref{pic:location} shows device owner’s location for a particular day (
 
 \subsubsection{Scenario 9: Smartphone is encrypted}
 
-An encrypted user data partition adds another security layer that can make data acquisition harder, or even prevent it at all. As described above in the~\cite{encryption} section, Android versions prior to 5.0 have their FDE vulnerable against off-the-box attacks, and it is enough to possess the partition dump and crypto-footer. But since version 5.0, an attacker has to acquire the key used to encrypt the DEK from the Keymaster somehow in addition to the dumps. The TEE is very vendor-specific, and the possible methods of key retrieval will probably be too. 
+An encrypted user data partition adds another security layer that can make data acquisition harder, or even prevent it at all. As described above in the \ref{section:encryption} section, Android versions prior to 5.0 have their FDE vulnerable against off-the-box attacks, and it is enough to possess the partition dump and crypto-footer. But since version 5.0, an attacker has to acquire the key used to encrypt the DEK from the Keymaster somehow in addition to the dumps. The TEE is very vendor-specific, and the possible methods of key retrieval will probably be too. 
 
 In our research, we tested the ability of finding the password used to encrypt the DEK on an encrypted Android 4.0.4 device. We supposed a scenario in which an attacker used one of the methods described above to get the device partitions dump, but the data partition is encrypted and neither key nor password are known. 
 
