@@ -58,9 +58,14 @@ In this case no attack is required because adversary can do everything he wants 
 
 \subsubsection{Scenario 1: Gesture pattern is visible}
 
-Sometimes fingers leave marks on the screen. If a device’s owner uses gestures screen lock, we are able to see the pattern left on the screen. In this research we were able to restore the pattern on a tested device. This is called a smudge attack. Figure X shows an example.
+Sometimes fingers leave marks on the screen. If a device’s owner uses gestures screen lock, we are able to see the pattern left on the screen. In this research we were able to restore the pattern on a tested device. This is called a smudge attack. Figure \ref{pic:smudge} shows an example.
 
-Figure X. Smudge attack.
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=\linewidth]{img/smudge-attack.png}
+\caption{Smudge attack}
+\label{pic:smudge}
+\end{figure}
 
 
 \textsl{Requirements:} pattern must be clearly seen on the screen.
@@ -70,9 +75,16 @@ Figure X. Smudge attack.
 
 \subsubsection{Scenario 2: Naive user}
 In this case social engineering can be used to trick a user into visiting a malicious website and install a trojan application. A major disadvantage of this technique is that no offline attacks are possible because the user has to access his phone. In this research we were able to modify network traffic from a legitimate website and insert javascript that prompts a user to install a trojan application that was downloaded automatically.
-An example below shows how the user can be tricked via javascript alert (Figure X). After pressing OK button a malicious application is being automatically downloaded. All user has to do is to install it.
+An example below shows how the user can be tricked via javascript alert (Figure \ref{pic:social}). After pressing OK button a malicious application is being automatically downloaded. All user has to do is to install it.
 
-Figure X. Using social engineering to install a malicious application.
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=\linewidth]{img/SE-screen.png}
+\caption{Using social engineering to install a malicious application.}
+\label{pic:social}
+\end{figure}
+
+
 We also tried to gain shell access via Stagefright vulnerability but the attempts were unsuccessful since all publicly available exploits work only on particular Android versions..
 \textsl{Requirements:} user has to be tricked, user has to be online, e.g. web surfing.
 
@@ -159,9 +171,15 @@ The process of unlocking the bootloader involves erasing data partition (wipe) a
 
 If bootloader is already unlocked, we are able to flash custom recovery image without wiping the data partition. After that it is possible to make a full memory dump. If the device is encrypted and its version is below 5.0, it is possible to perform an offline attack and recover the key used for decryption.
 
-Here is an example of how we can install arbitrary updates to a smartphone with a custom recovery (Figure X):
+Here is an example of how we can install arbitrary updates to a smartphone with a custom recovery (Figure \ref{pic:bad_upd}):
 
-Figure X. Installing a malicious update.
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=\linewidth]{img/recovery2.png}
+\caption{Installing a malicious update}
+\label{pic:bad_upd}
+\end{figure}
+
 
 \textsl{Requirements:} unlocked bootloader. If the smartphone is encrypted, it is possible to make a full memory dump and bruteforce the key in case its version is below 5.0.
 
@@ -202,9 +220,14 @@ Skilled adversary can use JTAG or chip-off technique to gain direct access to ph
 
 If the attacker has user’s Google account password, he can easily reset screen lock key and gain access to data. If the attacker only has access to user’s account without knowing the password, he can export phone contacts, mail, previous geographical locations and other personal information. This information does not include SMS, phone calls history,  correspondence from messengers and other application related data.
 
-Figure X shows device owner’s location for a particular day (two red dots):
+Figure \ref{pic:location} shows device owner’s location for a particular day (two red dots):
 
-Figure X. Device owner location.
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=\linewidth]{img/location.png}
+\caption{Device owner location}
+\label{pic:location}
+\end{figure}
 
 \textsl{Requirements:} password or access to user’s Google account.
 
@@ -243,8 +266,13 @@ We used a key bruteforce python script~\cite{android6} to find the key, and it m
 
 \subsection{Simplified threat model}
 
-In the Figure X we summarized our knowledge about Android and created a simplified threat model. This model does not cover all possible scenarios but can be used as a convenient reference.
+In the Figure \ref{pic:andro-threat} we summarized our knowledge about Android and created a simplified threat model. This model does not cover all possible scenarios but can be used as a convenient reference.
 
-Figure X. Simplified Android threat model.
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{img/android-threats.png}
+\caption{Simplified Android threat model}
+\label{pic:andro-threat}
+\end{figure*}
 
 
