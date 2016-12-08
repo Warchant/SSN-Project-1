@@ -241,7 +241,7 @@ An encrypted user data partition adds another security layer that can make data 
 
 In our research, we tested the ability of finding the password used to encrypt the DEK on an encrypted Android 4.0.4 device. We supposed a scenario in which an attacker used one of the methods described above to get the device partitions dump, but the data partition is encrypted and neither key nor password are known. 
 
-First, we used the Android documentation~\cite{android2} and the encryption system source code~\cite{andoid5} to find the exact format, in which the crypto-footer is stored for this Android version. With knowledge of the magic number we were able to find the crypto footer structure, and knowing the exact format, we parsed and got the data needed to derive the DEK from user password. 
+First, we used the Android documentation~\cite{android2} and the encryption system source code~\cite{android5} to find the exact format, in which the crypto-footer is stored for this Android version. With knowledge of the magic number we were able to find the crypto footer structure, and knowing the exact format, we parsed and got the data needed to derive the DEK from user password. 
 These commands below allow us to extract and parse crypto-footer from partition dump of the smartphone.
 
 \begin{lstlisting}
