@@ -14,3 +14,4 @@ _minted*
 *.blg
 *.fdb_latexmk
 *.lof
+*.bak

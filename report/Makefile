@@ -11,4 +11,4 @@ main.pdf: main.tex
 	$(TEX) main.tex
 
 clean:
-	latexmk -CA; rm main.bbl
+	latexmk -CA

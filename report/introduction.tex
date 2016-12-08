@@ -3,7 +3,7 @@ A lot of efforts in the information security field are spent on prevention the u
 
 \subsection{Research Question}
 
-Information can be stored on a wide variety of devices. These devices can be occasionally  left unattended. A lot of them contain private information, corporate secrets and so on, especially when it comes to “bring your own device” policy in some organisations. According to  IBM 2015 Cyber Security Intelligence Index (\url{https://public.dhe.ibm.com/common/ssi/ecm/se/en/sew03133usen/SEW03133USEN.PDF}) 60 \% of all attackers are insiders. An insider that has physical access to a device may attempt to steal information for personal gain, or to benefit another organization or country. Our goal is to identify possible attacks that can be performed via physical access to an electronic device, demonstrate them and provide countermeasures to protect from such kind of attacks. We will also identify attacks on smartphones that could be performed when an adversary and its victim are located in the same local network.
+Information can be stored on a wide variety of devices. These devices can be occasionally  left unattended. A lot of them contain private information, corporate secrets and so on, especially when it comes to “bring your own device” policy in some organisations. According to  IBM 2015 Cyber Security Intelligence Index \cite{rsi-index} 60 \% of all attackers are insiders. An insider that has physical access to a device may attempt to steal information for personal gain, or to benefit another organization or country. Our goal is to identify possible attacks that can be performed via physical access to an electronic device, demonstrate them and provide countermeasures to protect from such kind of attacks. We will also identify attacks on smartphones that could be performed when an adversary and its victim are located in the same local network.
 
 
 \subsection{Related work}
@@ -12,9 +12,7 @@ There are several works regarding Android forensics. One of them is called “An
 
 In paper “Android forensics: Automated data collection and reporting from a mobile device” researchers have created an Android monitoring system that collects data sets from users’ smartphones. In contrast to this, our data acquisition methods are not approved by user. User may be even unaware of that his smartphone is being analyzed.
 
-The book “Android Forensics: Investigation, Analysis and Mobile Security for Google Android” comprehensively describes various techniques of data acquisition but many of them are outdated and have to be reconsidered.
-
-TO BOGDAN http://theinvisiblethings.blogspot.ru/2009/10/evil-maid-goes-after-truecrypt.html
+The book “Android Forensics: Investigation, Analysis and Mobile Security for Google Android” comprehensively describes various techniques of data acquisition but many of them are outdated and have to be reconsidered \cite{evil-maid}.
 
 
 \subsection{Methodology}
@@ -22,12 +20,9 @@ TO BOGDAN http://theinvisiblethings.blogspot.ru/2009/10/evil-maid-goes-after-tru
 In this paper the following methodology is used. First, we choose device category,  then we define more precisely the goal in relation to the chosen device, then we enumerate possible obstacles and appropriate attack vectors. The device categories are:
 
 \begin{itemize}
-\item{}
-Computers: Linux, Windows.
-\item{}
-Smartphones: Android.
-\item{}
-Smart TVs.: Samsung Smart TV.
+\item Computers: Linux, Windows.
+\item Smartphones: Android.
+\item Smart TVs.: Samsung Smart TV.
 \end{itemize}
 
 Each device is tested with multiple configurations (if applicable) to cover more attack vectors. After that we conclude which configurations complicate the execution of the attacks. Based on that we provide countermeasures.
