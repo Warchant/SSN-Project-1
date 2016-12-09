@@ -8,6 +8,7 @@ BIB = bibtex
 all: main.pdf
 
 main.pdf: main.tex 
+	rm main.bbl
 	$(TEX) main.tex
 
 clean:

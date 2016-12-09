@@ -44,7 +44,7 @@ NFC tag
 
 The first three lock types are almost the only methods most people use to protect their device~\cite{android3}. All the three methods use the key verification data stored in /data/system directory in the MD5 hashed form. The first two, PIN and password, are made from the hashed user input string, and the last one is produced by hashing a sequence of bytes, each of which represents a lock matrix node, in the sequence the user connected them. The first row nodes are assigned bytes 0x00, 0x01, 0x02 and so forth, then the numeration continues to the second row and so on.
 
-The maximum gesture pattern variants number 140704 is achieved if using 8 or 9 nodes in the path. The overall amount of available paths is 389488[android7]. It is clear that a 4-digit PIN code and a 3x3 gesture pattern can be easily broken by exhaustive search attack. Also, as it was stated before, a strong enough against bruteforce attacks password is very unlikely to be chosen by average smartphone user.
+The maximum gesture pattern variants number 140704 is achieved if using 8 or 9 nodes in the path. The overall amount of available paths is 389488~\cite{android7}. It is clear that a 4-digit PIN code and a 3x3 gesture pattern can be easily broken by exhaustive search attack. Also, as it was stated before, a strong enough against bruteforce attacks password is very unlikely to be chosen by average smartphone user.
 
 
 \subsection{Possible scenarios}
@@ -172,7 +172,7 @@ The process of unlocking the bootloader involves erasing data partition (wipe) a
 
 If bootloader is already unlocked, we are able to flash custom recovery image without wiping the data partition. After that it is possible to make a full memory dump. If the device is encrypted and its version is below 5.0, it is possible to perform an offline attack and recover the key used for decryption.
 
-Here is an example of how we can install arbitrary updates to a smartphone with a custom recovery (Figure \ref{pic:bad_upd}):
+Here is an example of how we can install arbitrary updates to a smartphone with a custom recovery (Figure \ref{pic:bad_upd}).
 
 \begin{figure}[!ht]
 \centering
@@ -221,7 +221,7 @@ Skilled adversary can use JTAG or chip-off technique to gain direct access to ph
 
 If the attacker has user’s Google account password, he can easily reset screen lock key and gain access to data. If the attacker only has access to user’s account without knowing the password, he can export phone contacts, mail, previous geographical locations and other personal information. This information does not include SMS, phone calls history,  correspondence from messengers and other application related data.
 
-Figure \ref{pic:location} shows device owner’s location for a particular day (two red dots):
+Figure \ref{pic:location} shows device owner’s location for a particular day (two red dots).
 
 \begin{figure}[!ht]
 \centering

@@ -6,25 +6,25 @@ In each subsection we are going to describe possible computer settings, which co
 %------------------------------------------------------------------------------------------------------------
 \subsection{Attack 0 - Eject hard disk from the computer and mount it to attacker's computer} \label{a0}
 
-\subsubsection*{Attacking}
+\paragraph*{Attacking}
 Having physical access to the target computer the simpliest attack would be the ejecting the hard disk and mounting it to attacker's computer. Then, attacker can perform steps \ref{root-start}-\ref{root-end} described below (section \ref{a1}) to get root access.
 
-\subsubsection*{Mitigation}
-Since this is an offline attack, only offline techniques are applicable. You can keep your disk either in very secure place or use full disk encryption. To detect that your computer has been compromized after this attack, you can seal up your computer cover.
+\paragraph*{Mitigation}
+Since this is an offline attack, only offline techniques are applicable. You can keep your disk either in a very secure place or use full disk encryption. To detect that your computer has been compromized after this attack, you can seal up your computer cover.
 
-\subsubsection*{Vulnerable}
+\paragraph*{Vulnerable devices}
 This type of attack is especially dangerous for desktop PC's running any operating system, which have no \textbf{full} disk encryption. Having partial disk encryption (i.e. encryption of home folder) can protect your personal files, but attacker can setup a backdoor or a script, which will be executed on your next login, thus, compromizing your data.
 %------------------------------------------------------------------------------------------------------------
 
 % Attack 1
 %------------------------------------------------------------------------------------------------------------
 \subsection{Attack 1 - Booting into another OS}\label{a1}
-This method is very simple: attacker has to boot into another OS to get full access to computer's data. In this example we use live OS. Here we assume that computer has no full disk encryption enabled.
+This method is very simple: attacker has to boot into another OS to get full access to computer's data. In this example we use Live OS. Here we assume that computer has no full disk encryption enabled.
 
 
-\subsubsection*{Attacking}
+\paragraph*{Attacking}
 \begin{enumerate}
-    \item Insert USB stick or optical disk with any live linux OS. Reboot computer and boot into live OS \footnote{If it is server, then it is booted into main OS. Rebooting can be a signal to administrators that something is wrong, so this method is not stealth. If it is a personal computer, nobody would even notice that something has been stolen.}
+    \item Insert a USB stick or an optical disk with any live linux OS. Reboot computer and boot into live OS \footnote{If it is server, then it is booted into main OS. Rebooting can be a signal to administrators that something is wrong, so this method is not stealth. If it is a personal computer, nobody would even notice that something has been stolen.}
     
     \item Get list of partitions \label{root-start}
 \begin{lstlisting}
@@ -55,50 +55,50 @@ root@kali:/mnt# chroot disk/
 \end{lstlisting}
 \end{enumerate}
 
-Done! Attacker has root access and able read any file on a mounted filesystem. At this point he can steal sensitive files or create a local or a remote backdoor into main operating system. 
+Done! Attacker has root access and is able to read any file on a mounted filesystem. At this point he can steal sensitive files or create a local or a remote backdoor into main operating system. 
 
 
-\subsubsection*{Mitigation}
+\paragraph*{Mitigation}
 The best defensive method to prevent this attack is to restrict booting into another OS or restrict access to data on a hard disk by encrypting it:
 
 \begin{itemize}
-    \item \textit{Remove all USB ports, as well as optical drives}. This are extreme measures, but in some cases may be useful. Unfortunately, other attacks are possible.
+    \item \textit{Remove all USB ports, as well as optical drives}. These are extreme measures, but in some cases may be useful. Unfortunately, other attacks are possible.
     
-    \item \textit{Seal up all USB ports and computer cover}. Sealing up does not restrict the attacker to steal the data, but will not allow to do so without detection. 
+    \item \textit{Seal up all USB ports and computer cover}. Sealing up does not restrict the attacker to steal the data, but it will not allow to do so without detection. 
     
-    \item \textit{Restrict booting from USB in BIOS}. This is not secure method, because what prevents an attacker to change settings back? May be password in BIOS? Well prepared attacker is able to reset BIOS settings, including a password. It can be reset either with jumpers on the motherboard or by disconnecting the CMOS battery for a few seconds. But this measure is necessary.
+    \item \textit{Restrict booting from USB in BIOS}. This is not a secure method, because what prevents an attacker to change settings back? Well prepared attacker is able to reset BIOS settings, including a password. It can be reset either with jumpers on the motherboard or by disconnecting the CMOS battery for a few seconds. But this measure is necessary.
     
-    \item \textit{Enable UEFI Secure boot}, if your OS was installed in UEFI mode. This option allows to restrict booting into unsigned operating systems. But another problem occurs: to use this attack, attacker can boot from USB into any linux system, including signed (like Ubuntu). This method is not practical.
+    \item \textit{Enable UEFI Secure boot}, if your OS was installed in UEFI mode. This option allows to restrict booting into unsigned operating systems. But another problem occurs: to use this attack, attacker can boot from USB into any Linux system, including signed systems (like Ubuntu). This method is not practical.
     
     \item \textit{Enable full disk encryption}. The only way to save your data. 
 \end{itemize}
 
-Encrypting only user's home folder restricts an attacker to access sensitive data, it is fast enough to ignore delays during boot and doesn't require a password during boot, which is useful characteristics for server systems. But, well-prepared attacker is able to setup a script, which will be executed right after user login, thus stealing decrypted data or providing full remote access to target computer.
+Encrypting only user's home folder restricts access to sensitive data, it is fast enough to ignore delays during boot and does not require a password during boot, which is useful for server systems. However, well-prepared attacker is able to setup a script, which will be executed right after user login, thus stealing decrypted data or providing full remote access to the target computer.
 
 
-\subsubsection*{Vulnerable}
-This type of attack can be performed against any operating system on any computer including personal computers and servers, such that can be booted into another OS from USB stick, optical drive, PXE, another hard disk, etc and doesn't have full disk encryption enabled. Having physical access to the computer means having root access to this computer.
+\paragraph*{Vulnerable devices}
+This type of attack can be performed against any operating system on any computer including personal computers and servers that can be booted into another OS from a USB stick, optical drive, PXE, another hard disk, etc and do not have full disk encryption enabled. Having physical access to the computer means having root access to this computer.
 %------------------------------------------------------------------------------------------------------------
 
 % Attack 2
 %------------------------------------------------------------------------------------------------------------
 \subsection{Attack 2 - Booting into a root shell from the bootloader}
-What if for some reason attacker can't boot into another OS from the external device? Linux bootloaders can load computer into \textbf{root shell without any password}. This is how it is explained in Ubuntu help:
+What if for some reason attacker cannot boot into another OS from the external device? Linux bootloaders can load computer into \textbf{root shell without any password}. This is how it is explained in Ubuntu help:
 \begin{quote}
 Sometimes it is necessary to get root access, for example when you have forgotten your password or changed something in /etc/sudoers and things do not work as expected.  Be careful, because this step will give you full root access to your system and you can really damage your system! Keep in mind that all the steps you see here can also be done by someone else!~\cite{bootloader-reset-root} 
 \end{quote}
 
-\subsubsection*{Attacking}
-For each bootloder procedure is different, but the main idea is the same: edit boot configuration and set initial booting process as \texttt{init=/bin/bash}.
+\paragraph*{Attacking}
+The procedure is different for each bootloder, but the main idea is the same: edit boot configuration and set initial booting process as \texttt{init=/bin/bash}.
 
 \begin{enumerate}
-    \item[1a] When booting up press SHIFT (in systems 9.10 "karmic" or later) or ESC (in systems 9.04 "jaunty" or earlier) at the grub prompt and use the arrow keys to select the rescue mode option and press enter. 
+    \item[1a)] When booting up press SHIFT (in systems 9.10 "karmic" or later) or ESC (in systems 9.04 "jaunty" or earlier) at the grub prompt and use the arrow keys to select the rescue mode option and press enter. 
 
-    \item[1b] Reboot computer, press SHIFT or ESC at the grub prompt, select OS image, press `e' to edit, go to the very end of the line starting with linux image path, add \texttt{init=/bin/bash} to the end of the line, press \texttt{ctrl+x} or \texttt{enter}, then \texttt{b}.
+    \item[1b)] Reboot computer, press SHIFT or ESC at the grub prompt, select OS image, press `e' to edit, go to the very end of the line starting with linux image path, add \texttt{init=/bin/bash} to the end of the line, press \texttt{ctrl+x} or \texttt{enter}, then \texttt{b}.
 
-    \item[1c] For LILO bootloader: type \verb|linux single|
+    \item[1c)] For LILO bootloader: type \verb|linux single|
 
-    \item You are in passwordless root shell. The filesystem may be read only, remount it
+    \item[2)] You are in passwordless root shell. The filesystem may be read only, remount it.
 
 \begin{lstlisting}
 # mount -rw -o remount /
@@ -110,19 +110,19 @@ For each bootloder procedure is different, but the main idea is the same: edit b
 Done! Attacker has root access to your filesystem.
 
 
-\subsubsection*{Mitigation}
+\paragraph*{Mitigation}
 The only way to protect ourself is to setup a password on a bootloader. It will be prompted each time, when somebody is trying to change any setting in bootloader. 
 
 The setup method is different for each bootloader.
 
-\subsubsection*{Vulnerable}
+\paragraph*{Vulnerable devices}
 This type of attack can be performed against any operating system on any computer, which have linux bootloaders installed (most popular are GRUB and LILO) including personal computers and servers. Access to root shell exposes access to all operating systems on disk.
 %------------------------------------------------------------------------------------------------------------
 
 % Attack 3
 %------------------------------------------------------------------------------------------------------------
 \subsection{Attack 3 - Partial disk encryption}
-The universal way to mitigate previously described attacks was disk encryption. In this subsection we consider a computer with partial disk encryption enabled. Partial disk encryption is encryption of user files: user's home directory, single folder or single file. Generally it doesn't encrypt OS files.
+The universal way to mitigate previously described attacks is disk encryption. In this subsection we consider a computer with a partial disk encryption enabled. Partial disk encryption is encryption of user files: user's home directory, single folder or single file. Generally it does not encrypt OS files.
 
 \paragraph*{Attacking}
 We assume that attacker got physical access and access to mounted filesystem using one of previously described attacks. 
@@ -184,14 +184,14 @@ diff -Naur Linux-PAM-1.1.8/modules/pam_unix/support.c pam-1.1.8-sniff/modules/pa
 Encrypt operating system's files by using full disk encryption.
 
 \paragraph*{Vulnerable}
-Vulnerable all computers with any operating system. If attacker has access to your operating system files, you are in danger.
+Any computer with any operating system is vulnerable. If attacker has access to your operating system files, you are in danger.
 %------------------------------------------------------------------------------------------------------------
 
 
 % Attack 4
 %------------------------------------------------------------------------------------------------------------
 \subsection{Attack 4 - Full disk encryption}
-In this subsection we consider a computer with full disk encryption enabled. Full disk encryption is used to encrypt whole disk: user data, operating system. To boot into such OS it must be decrypted during boot. Decryption performs secondary bootloader, in Linux it is \texttt{initrd}~\footnote{initrd (initial ramdisk) is a scheme for loading a temporary root file system into memory, which may be used as part of the Linux startup process.}, in Windows it is \texttt{bootmgr.exe}~\footnote{\url{https://en.wikipedia.org/wiki/Windows_Vista_startup_process}}. They typically residue in \texttt{Efi System Partition} (boot partition). This attack is possible only because these bootloaders stored in clear on disk.
+In this subsection we consider a computer with full disk encryption enabled. Full disk encryption is used to encrypt whole disk: user data, operating system. To boot into such OS it must be decrypted during boot. Decryption performs secondary bootloader, in Linux it is \texttt{initrd}~\footnote{initrd (initial ramdisk) is a scheme for loading a temporary root file system into memory, which may be used as part of the Linux startup process.}, in Windows it is \texttt{bootmgr.exe}~\footnote{\url{https://en.wikipedia.org/wiki/Windows_Vista_startup_process}}. They typically residue in \texttt{Efi System Partition} (boot partition). This attack is possible only because these bootloaders are stored in clear on disk.
 
 \paragraph*{Attacking}
 This attack is called "Evil maid attack"~\cite{evil-maid}. The scenario is:
@@ -266,7 +266,7 @@ diff -Naur --no-dereference tmp.orig/scripts/local-top/cryptroot tmp.evil/script
 
 As a result, full compromisation of main operating system.
 
-If a Target uses Windows, attacking is harder, because it requires to reverse-engineer and patch \texttt{bootmgr.exe} binary.
+If a Target uses Windows, attacking is harder, because it requires to reverse engineer and patch \texttt{bootmgr.exe} binary.
 
 \paragraph*{Mitigation}
 \begin{itemize}
@@ -275,6 +275,6 @@ If a Target uses Windows, attacking is harder, because it requires to reverse-en
     \item If your computer has no TPM, the easiest way to make it safer is to install boot partition onto external drive like USB stick thus there will be no unencrypted data on the disk. To boot into operating system user is required to insert this USB stick.
 \end{itemize}
 
-\paragraph*{Vulnerable}
+\paragraph*{Vulnerable devices}
 If your computer has no pre-boot settings verification, evil-maid attack can be performed independetly from OS.
 %------------------------------------------------------------------------------------------------------------
